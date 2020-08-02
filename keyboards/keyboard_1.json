@@ -1,0 +1,21 @@
+{
+  "one_time": true,
+  "buttons": [
+    [
+      {
+        "action": {
+          "type": "text",
+          "label": "Начать тест"
+        },
+        "color": "positive"
+      },
+      {
+        "action": {
+          "type": "text",
+          "label": "Закончить тест"
+        },
+        "color": "negative"
+      }
+    ]
+  ]
+}

@@ -1,0 +1,14 @@
+version: '2.1'
+
+services:
+  mydb:
+    image: "mariadb:latest"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test_casing
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysqldata:/var/lib/mysql

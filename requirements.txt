@@ -1,0 +1,7 @@
+vk_api
+requests
+pymysql
+sqlalchemy
+openpyxl
+pandas
+matplotlib
