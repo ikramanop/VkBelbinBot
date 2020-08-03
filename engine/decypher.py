@@ -1,7 +1,7 @@
 import json
 import operator
 import os
-from math import pi
+from math import pi, ceil
 
 import matplotlib.pyplot as plt
 import openpyxl
@@ -79,6 +79,8 @@ def write_excel(peer_id, db: DbConnector):
 def save_picture(peer_id, db: DbConnector):
     result = db.get_result(peer_id)
     data_dict = {res.split(': ')[0]: [int(res.split(': ')[1][:-1])] for res in result.result.split(';')[:-1]}
+    y_limit = ceil(max(data_dict.values())[0] / 10)
+    y_ticks = [i * 10 for i in range(1, y_limit)]
     df = pd.DataFrame({'group': ['A'], **data_dict})
 
     categories = list(df)[1:]
@@ -95,8 +97,8 @@ def save_picture(peer_id, db: DbConnector):
     plt.xticks(angles[:-1], categories, color='grey', size=8)
 
     ax.set_rlabel_position(0)
-    plt.yticks([10, 20, 30], ["10", "20", "30"], color="grey", size=7)
-    plt.ylim(0, 40)
+    plt.yticks(y_ticks, map(str, y_ticks), color="grey", size=7)
+    plt.ylim(0, y_limit * 10)
 
     ax.plot(angles, values, linewidth=1, linestyle='solid')
 
