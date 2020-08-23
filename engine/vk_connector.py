@@ -2,7 +2,24 @@ import time
 
 import requests
 import vk_api
-from vk_api.longpoll import VkLongPoll, VkEventType
+from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
+
+
+class VkEvent:
+    """
+    Вспомогательный класс с Event для упрощения работы с raw vk-api событиями
+    """
+
+    def __init__(self, event):
+        """
+        Инициализация Event
+        :param event: объект VkBotMessageEvent
+        """
+        self.type = event.type
+        self.text = event.object.message['text']
+        self.id = event.object.message['id']
+        self.from_user = event.object.message['from_id']
+        self.user_id = event.object.message['peer_id']
 
 
 class VkApiConnector:
@@ -10,28 +27,28 @@ class VkApiConnector:
     Класс для использования VK API
     """
 
-    class MyVkLongPoll(VkLongPoll):
+    class MyVkBotLongPoll(VkBotLongPoll):
         """
         Переопределение класса с LongPoll для обработки типовых ошибок
-        Позволяет более эффективно пользоваться ботов
+        Позволяет более эффективно пользоваться ботом
         """
 
         def listen(self):
             while True:
                 try:
                     for _event in self.check():
-                        yield _event
+                        yield VkEvent(_event)
                 except Exception as err:
                     print('Longpoll Error (VK):', err)
 
-    def __init__(self, token):
+    def __init__(self, token, group_id):
         """
         Инициализация VK API
         :param token: Токен для группы ВК
         """
         vk_session = vk_api.VkApi(token=token)
 
-        self.longpoll = self.MyVkLongPoll(vk_session)
+        self.longpoll = self.MyVkBotLongPoll(vk_session, group_id)
 
         self.vk = vk_session.get_api()
 
@@ -58,7 +75,7 @@ class VkApiConnector:
         :param event: Объект EVENT
         :return: Bool
         """
-        return event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text
+        return event.type == VkBotEventType.MESSAGE_NEW and event.id > 0 and event.text
 
     def get_user_name(self, peer_id):
         """

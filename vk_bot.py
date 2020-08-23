@@ -20,7 +20,8 @@ PATTERN = re.compile(r'^(10|\d) (10|\d) (10|\d) (10|\d) (10|\d) (10|\d) (10|\d) 
 STATIC_TEXT = json.loads(open('./static/questions.json', 'r', encoding='UTF-8').read())
 
 api = VkApiConnector(
-    token=VK_CONFIG['VK_TOKEN']
+    token=VK_CONFIG['VK_TOKEN'],
+    group_id=VK_CONFIG['VK_GROUP_ID']
 )
 
 data = DbConnector(
@@ -33,7 +34,6 @@ data = DbConnector(
 
 for event in api.longpoll.listen():
     if api.check_message(event):
-        print(event)
         if event.from_user:
             if data.get_user(event.user_id):
                 if event.text.lower() == 'закончить тест':
@@ -91,7 +91,7 @@ for event in api.longpoll.listen():
 
                             if data.get_user(event.user_id).phase == 8:
                                 msg_attach = calculate_test(event.user_id, data)
-                                send_string = 'Спасибо\n\n' + msg_attach[0]
+                                send_string = msg_attach[0]
                                 attachment = api.prepare_photo_attachment(event.user_id, msg_attach[1])
                             else:
                                 send_string = STATIC_TEXT[str(data.get_user(event.user_id).phase)]

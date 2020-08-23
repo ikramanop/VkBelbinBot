@@ -126,10 +126,10 @@ def calculate_test(peer_id, db: DbConnector):
     pic_path = save_picture(peer_id, db)
 
     result = db.get_result(peer_id)
-    result_string = 'Результат тестирования:\n\n'
-    for rec in result.result.split(';'):
-        result_string += rec + '\n\n'
+    result_string = json.loads(open('static/result.json').read())['result']
+    for i, rec in enumerate(result.result.split(';')):
+        result_string = result_string.replace('field' + str(i), rec)
 
-    result_string += f'Приоритет: {result.priority}'
+    result_string = result_string.replace('field8', result.priority)
 
     return result_string, pic_path
